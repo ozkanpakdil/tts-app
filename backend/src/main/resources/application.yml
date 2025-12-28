@@ -16,6 +16,17 @@ spring:
       hibernate:
         format_sql: true
 
+# Actuator for monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
 # Cloud TTS Credentials (Optional)
 aws:
   polly:

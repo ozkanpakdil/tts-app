@@ -1,10 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, Button, TextInput, ScrollView, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import TTSService from '../services/TTSService';
 import { useFileStore, useSettingsStore, useAudioStore } from '../store/useStore';
 import RNFS from 'react-native-fs';
 import AudioPlayer, { AudioPlayerRef } from '../components/AudioPlayer';
 import { useOfflineStatus } from '../hooks/useOfflineStatus';
+import AnalyticsService from '../services/AnalyticsService';
 
 const HomeScreen = ({ navigation }: any) => {
   const [text, setText] = useState('Welcome to the TTS App. You can type anything here and I will read it for you.');
@@ -16,6 +17,10 @@ const HomeScreen = ({ navigation }: any) => {
   const audioPlayerRef = useRef<AudioPlayerRef>(null);
   const isOffline = useOfflineStatus();
 
+  useEffect(() => {
+    AnalyticsService.logScreenView('Home');
+  }, []);
+
   const handleSpeak = async () => {
     if (!text.trim()) return;
 
@@ -24,6 +29,7 @@ const HomeScreen = ({ navigation }: any) => {
       TTSService.setLanguage(language);
       TTSService.setRate(rate);
       TTSService.setPitch(pitch);
+      AnalyticsService.logEvent('tts_speak_device', { length: text.length });
       TTSService.speak(text);
     } else {
       if (isOffline) {
@@ -31,6 +37,7 @@ const HomeScreen = ({ navigation }: any) => {
         return;
       }
       setLoadingCloud(true);
+      AnalyticsService.startTrace('cloud_tts_latency');
       try {
         const uri = await TTSService.speakCloud(text, ttsProvider, {
           voiceId,
@@ -39,8 +46,11 @@ const HomeScreen = ({ navigation }: any) => {
           pitch,
           audioQuality
         });
+        AnalyticsService.stopTrace('cloud_tts_latency');
+        AnalyticsService.logEvent('tts_speak_cloud', { provider: ttsProvider, length: text.length });
         audioPlayerRef.current?.play(uri);
       } catch (err: any) {
+        AnalyticsService.logError(err, 'Cloud TTS speak failed');
         Alert.alert('Cloud TTS Error', err.message);
       } finally {
         setLoadingCloud(false);
