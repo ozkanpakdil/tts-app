@@ -10,7 +10,7 @@ A cross-platform Text-to-Speech mobile application supporting iOS and Android wi
 ### 1.1 Development Environment Setup
 - [x] Install Node.js (LTS version) (Verified)
 - [x] Install React Native CLI (Verified)
-- [x] Install Android Studio with SDK (Verified by user on Debian)
+- [x] Install Android Studio with SDK (Verified by user on Debian, Installer script created)
 - [x] Install Xcode (for iOS development) (Verified)
 - [x] Install Java JDK 17+ (Verified)
 - [x] Install Maven or Gradle for Java backend (Verified)
@@ -63,7 +63,7 @@ A cross-platform Text-to-Speech mobile application supporting iOS and Android wi
 - [x] Support DOCX file reading (via backend fallback)
 
 ### 2.4 Text-to-Speech Module (On-Device)
-- [x] Integrate react-native-tts library
+- [x] Integrate react-native-tts library (Fixed Gradle 9 compatibility)
 - [x] Implement voice selection (male/female)
 - [x] Implement language selection
 - [x] Create playback controls (play, pause, stop)

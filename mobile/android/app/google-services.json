@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "814507850762",
+    "project_id": "tts-app-a0d8e",
+    "storage_bucket": "tts-app-a0d8e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:814507850762:android:a268abb621a3d2b053f3f3",
+        "android_client_info": {
+          "package_name": "com.mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "814507850762-brp7d9kth96h7jm93tmmgv4pm4dp9cdg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDo1pY4l-d5BptnaQi6trgNBIzHaxxr1R0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "814507850762-brp7d9kth96h7jm93tmmgv4pm4dp9cdg.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "814507850762-g56r4ku0ne570nirimesr0nmvg66cjm9.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "io.github.ozkanpakdil.ttsapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

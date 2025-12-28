@@ -129,8 +129,13 @@ We provide shell scripts to simplify the setup and running process:
 
 ```bash
 # iOS Setup and Run (macOS only)
-./scripts/setup-ios.sh    # Install all dependencies
-./scripts/run-ios.sh      # Start the iOS Simulator with the app
+./scripts/setup-ios.sh      # Install all dependencies
+./scripts/run-ios.sh        # Start the iOS Simulator with the app
+
+# Android Setup and Run (Linux/macOS)
+./scripts/setup-android.sh  # Install dependencies (will offer to install Android Studio on Linux if missing)
+./scripts/run-android.sh    # Start Android build and run on device/emulator
+./scripts/build-apk.sh      # Build a debug or release APK
 ```
 
 #### Manual Setup
@@ -230,7 +235,62 @@ npx react-native run-ios --simulator="iPhone 15"
 | Simulator not starting | Open Xcode > Settings > Platforms > Download iOS Simulator |
 | Metro bundler port in use | Kill the process on port 8081: `lsof -ti:8081 \| xargs kill` |
 
+### 🤖 Running on Android (Linux/macOS)
+
+#### Prerequisites
+- Node.js 20+
+- Java JDK 17
+- Android Studio with SDK 33+
+- `ANDROID_HOME` environment variable configured
+
+#### Option 1: Using Shell Scripts (Recommended)
+
+**Step 1: Setup the development environment**
+```bash
+# From the project root directory
+./scripts/setup-android.sh
+```
+
+**Step 2: Run the app on Android**
+```bash
+# Run on default connected device/emulator
+./scripts/run-android.sh
+
+# List connected devices
+./scripts/run-android.sh --list
+
+# Run on a specific device
+./scripts/run-android.sh --device "emulator-5554"
+
+# Run in release mode
+./scripts/run-android.sh --release
+```
+
+**Step 3: Build an APK**
+```bash
+# Build debug APK
+./scripts/build-apk.sh
+
+# Build release APK
+./scripts/build-apk.sh --release
+
+# Clean and build release APK
+./scripts/build-apk.sh --clean --release
+```
+
+#### Option 2: Manual Steps
+
+```bash
+# 1. Install dependencies
+cd mobile
+npm install
+
+# 2. Run on Android (in another terminal)
+npm run android
+```
+
 #### 3. Backend Setup
+
 ```bash
 cd backend
 
