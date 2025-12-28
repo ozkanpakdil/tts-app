@@ -1,0 +1,24 @@
+default_platform(:android)
+
+platform :android do
+  desc "Build debug version of the app"
+  lane :build_debug do
+    gradle(task: "assembleDebug")
+  end
+
+  desc "Build release version of the app"
+  lane :build_release do
+    gradle(task: "assembleRelease")
+  end
+
+  desc "Submit a new Beta Build to Google Play Internal Track"
+  lane :beta do
+    upload_to_play_store(track: 'internal', apk: 'app/build/outputs/apk/release/app-release.apk')
+  end
+
+  desc "Deploy a new version to the Google Play Store"
+  lane :deploy do
+    gradle(task: "bundleRelease")
+    upload_to_play_store(track: 'production')
+  end
+end

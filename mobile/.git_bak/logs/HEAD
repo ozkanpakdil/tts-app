@@ -1,0 +1,5 @@
+0000000000000000000000000000000000000000 3e8850d011fccb191589421206b288eff72c6489 Özkan Pakdil <ozkan.pakdil@gmail.com> 1766920222 +0000	commit (initial): Initial commit
+3e8850d011fccb191589421206b288eff72c6489 b447b66ecc95d66b2f8151b98a64e303c56425d6 Özkan Pakdil <ozkan.pakdil@gmail.com> 1766922708 +0000	commit: Implement core app functionality: screens, TTS services, and audio library
+b447b66ecc95d66b2f8151b98a64e303c56425d6 85e652d4c116f415b42bdd658b4c09cd27742807 Özkan Pakdil <ozkan.pakdil@gmail.com> 1766924151 +0000	commit: Add unit tests for AuthService and FileService; enhance TTS with audio quality settings
+85e652d4c116f415b42bdd658b4c09cd27742807 de1b00d89027e7a149aafd4e82f31ccce742e61c Özkan Pakdil <ozkan.pakdil@gmail.com> 1766924540 +0000	commit: Add Fastlane for Android builds; update app metadata and integrate Google Services
+de1b00d89027e7a149aafd4e82f31ccce742e61c bfefb6b1add76b29a9474c164e53f6699c24a3a9 Özkan Pakdil <ozkan.pakdil@gmail.com> 1766928536 +0000	commit: Add e2e tests with Detox, document library screen, and Firebase integration
