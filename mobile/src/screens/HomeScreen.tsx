@@ -25,10 +25,16 @@ const HomeScreen = ({ navigation }: any) => {
     if (!text.trim()) return;
 
     if (ttsProvider === 'on-device') {
-      if (voiceId) TTSService.setVoice(voiceId);
-      TTSService.setLanguage(language);
-      TTSService.setRate(rate);
-      TTSService.setPitch(pitch);
+      // Configure TTS settings - errors are handled internally by TTSService
+      // so speak() will still be called even if configuration fails
+      try {
+        if (voiceId) TTSService.setVoice(voiceId);
+        TTSService.setLanguage(language);
+        TTSService.setRate(rate);
+        TTSService.setPitch(pitch);
+      } catch (error) {
+        console.warn('TTS configuration error (continuing with defaults):', error);
+      }
       AnalyticsService.logEvent('tts_speak_device', { length: text.length });
       TTSService.speak(text);
     } else {

@@ -122,6 +122,19 @@ cd tts-app
 ```
 
 ### Mobile App Setup
+
+#### Quick Setup with Scripts (Recommended)
+
+We provide shell scripts to simplify the setup and running process:
+
+```bash
+# iOS Setup and Run (macOS only)
+./scripts/setup-ios.sh    # Install all dependencies
+./scripts/run-ios.sh      # Start the iOS Simulator with the app
+```
+
+#### Manual Setup
+
 ```bash
 cd mobile
 npm install
@@ -137,6 +150,86 @@ fastlane build_debug
 cd ../ios && pod install && cd ..
 ```
 
+### 📱 Running on iOS Simulator (macOS only)
+
+#### Prerequisites
+- macOS (required for iOS development)
+- Xcode 14+ installed from the App Store
+- Xcode Command Line Tools (`xcode-select --install`)
+- Node.js 20+ ([download](https://nodejs.org/) or install via `brew install node`)
+- CocoaPods (will be installed automatically by setup script if missing)
+
+#### Option 1: Using Shell Scripts (Recommended)
+
+**Step 1: Setup the development environment**
+```bash
+# From the project root directory
+./scripts/setup-ios.sh
+```
+
+This script will:
+- Verify all prerequisites (Xcode, Node.js, CocoaPods)
+- Install Node.js dependencies (`npm install`)
+- Install CocoaPods dependencies (`pod install`)
+
+**Step 2: Run the app on iOS Simulator**
+```bash
+# Run on default simulator
+./scripts/run-ios.sh
+
+# List available simulators
+./scripts/run-ios.sh --list
+
+# Run on a specific simulator
+./scripts/run-ios.sh --simulator "iPhone 15"
+./scripts/run-ios.sh --simulator "iPhone 15 Pro Max"
+
+# Run in release mode
+./scripts/run-ios.sh --release
+```
+
+**Script Options:**
+| Option | Description |
+|--------|-------------|
+| `--list` | List all available iOS simulators |
+| `--simulator NAME` | Specify simulator by name (e.g., "iPhone 15") |
+| `--device ID` | Specify simulator by device ID |
+| `--release` | Build and run in release mode |
+| `--help` | Show help message |
+
+#### Option 2: Manual Steps
+
+```bash
+# 1. Install dependencies
+cd mobile
+npm install
+
+# 2. Install CocoaPods dependencies
+cd ios
+pod install
+cd ..
+
+# 3. Start Metro bundler (in a separate terminal)
+npm start
+
+# 4. Run on iOS Simulator (in another terminal)
+npm run ios
+
+# Or specify a simulator
+npx react-native run-ios --simulator="iPhone 15"
+```
+
+#### Troubleshooting iOS
+
+| Issue | Solution |
+|-------|----------|
+| "Command Line Tools not found" | Run `xcode-select --install` |
+| "CocoaPods not found" | Run `sudo gem install cocoapods` |
+| Pod install fails | Try `cd mobile/ios && pod install --repo-update` |
+| Build fails with signing error | Open `mobile/ios/mobile.xcworkspace` in Xcode and configure signing |
+| Simulator not starting | Open Xcode > Settings > Platforms > Download iOS Simulator |
+| Metro bundler port in use | Kill the process on port 8081: `lsof -ti:8081 \| xargs kill` |
+
 #### 3. Backend Setup
 ```bash
 cd backend
@@ -150,18 +243,43 @@ cd backend
 
 ### Environment Configuration
 
-#### Mobile App (.env)
-```env
-# Firebase Configuration
-FIREBASE_API_KEY=your_api_key
-FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-FIREBASE_PROJECT_ID=your_project_id
+#### Mobile App - Firebase Setup
 
-# Backend API
-API_BASE_URL=https://your-backend-url.com/api
+This app uses [React Native Firebase](https://rnfirebase.io/) which requires native configuration files (not `.env` files).
 
-# Optional: Cloud TTS (if using backend proxy)
-ENABLE_CLOUD_TTS=false
+##### iOS Setup (GoogleService-Info.plist)
+
+1. Go to the [Firebase Console](https://console.firebase.google.com/)
+2. Select your project (or create a new one)
+3. Click "Add app" and select iOS
+4. Enter your iOS bundle ID: `io.github.ozkanpakdil.ttsapp` (or your custom bundle ID)
+5. Download the `GoogleService-Info.plist` file
+6. Place it in: `mobile/ios/mobile/GoogleService-Info.plist`
+
+**Important:** The bundle ID in your Xcode project must match the bundle ID registered in Firebase. To check/change it:
+- Open `mobile/ios/mobile.xcworkspace` in Xcode
+- Select the project in the navigator
+- Under "Signing & Capabilities", verify the Bundle Identifier matches your Firebase app
+
+##### Android Setup (google-services.json)
+
+1. Go to the [Firebase Console](https://console.firebase.google.com/)
+2. Select your project
+3. Click "Add app" and select Android
+4. Enter your Android package name: `com.mobile` (or your custom package name)
+5. Download the `google-services.json` file
+6. Place it in: `mobile/android/app/google-services.json`
+
+##### After Adding Firebase Config Files
+
+After placing the configuration files, rebuild the app:
+```bash
+# iOS
+cd mobile/ios && pod install && cd ..
+./scripts/run-ios.sh
+
+# Android
+cd mobile && npm run android
 ```
 
 #### Backend (application.yml)

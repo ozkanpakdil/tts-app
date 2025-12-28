@@ -29,7 +29,7 @@ const LoginScreen = ({ navigation }: any) => {
   };
 
   const handleSkipLogin = () => {
-    navigation.replace('Main');
+    AuthService.skipLogin();
   };
 
   return (

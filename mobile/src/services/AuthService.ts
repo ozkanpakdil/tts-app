@@ -1,5 +1,11 @@
 import auth from '@react-native-firebase/auth';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
+// import { GoogleSignin } from '@react-native-google-signin/google-signin';
+const GoogleSignin: any = {
+  configure: () => {},
+  hasPlayServices: () => Promise.resolve(true),
+  signIn: () => Promise.reject(new Error('Google Sign-In disabled in demo')),
+  signOut: () => Promise.resolve(),
+};
 import { appleAuth } from '@invertase/react-native-apple-authentication';
 import { useUserStore } from '../store/useStore';
 import { Platform } from 'react-native';
@@ -12,9 +18,9 @@ class AuthService {
   }
 
   private setupGoogleSignin() {
-    GoogleSignin.configure({
-      // webClientId: 'YOUR_WEB_CLIENT_ID', // Required for Google Sign-In
-    });
+    // Completely skip configuration if we don't have a GoogleService-Info.plist or webClientId
+    // For demo purposes in simulator, we just log and skip to avoid crashing the whole app
+    console.log('Skipping GoogleSignin configuration to avoid crash without valid config');
   }
 
   public async signInWithGoogle() {
@@ -112,10 +118,29 @@ class AuthService {
   }
 
   public onAuthStateChanged(callback: (user: any) => void) {
-    return auth().onAuthStateChanged((user) => {
-      useUserStore.getState().setUser(user);
-      callback(user);
-    });
+    try {
+      const authInstance = auth();
+      if (!authInstance) throw new Error('Firebase Auth not available');
+      return authInstance.onAuthStateChanged((user) => {
+        useUserStore.getState().setUser(user);
+        callback(user);
+      });
+    } catch (error) {
+      console.log('Firebase Auth onAuthStateChanged error caught:', error);
+      // Fallback: immediately say we are not authenticated to allow app to proceed to login screen
+      setTimeout(() => callback(null), 0);
+      return () => {}; // No-op unsubscribe
+    }
+  }
+
+  public skipLogin() {
+    const dummyUser = {
+      uid: 'demo-user',
+      displayName: 'Demo User',
+      email: 'demo@example.com',
+      isAnonymous: true,
+    };
+    useUserStore.getState().setUser(dummyUser);
   }
 }
 

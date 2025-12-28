@@ -1,10 +1,13 @@
-import analytics from '@react-native-firebase/analytics';
-import crashlytics from '@react-native-firebase/crashlytics';
+// Using Firebase modular API (v22+)
+// See: https://rnfirebase.io/migrating-to-v22
+import { getAnalytics, logEvent, setUserId, logScreenView } from '@react-native-firebase/analytics';
+import { getCrashlytics, log, recordError, setUserId as setCrashlyticsUserId } from '@react-native-firebase/crashlytics';
 
 class AnalyticsService {
-  public async logEvent(name: string, params?: object) {
+  public async logEvent(name: string, params?: Record<string, any>) {
     try {
-      await analytics().logEvent(name, params);
+      const analytics = getAnalytics();
+      await logEvent(analytics, name, params);
     } catch (error) {
       console.error('Analytics logEvent error:', error);
     }
@@ -12,9 +15,11 @@ class AnalyticsService {
 
   public async setUserId(userId: string | null) {
     try {
-      await analytics().setUserId(userId);
+      const analytics = getAnalytics();
+      await setUserId(analytics, userId);
       if (userId) {
-        await crashlytics().setUserId(userId);
+        const crashlyticsInstance = getCrashlytics();
+        await setCrashlyticsUserId(crashlyticsInstance, userId);
       }
     } catch (error) {
       console.error('Analytics setUserId error:', error);
@@ -22,15 +27,21 @@ class AnalyticsService {
   }
 
   public logError(error: Error, message?: string) {
-    if (message) {
-      crashlytics().log(message);
+    try {
+      const crashlyticsInstance = getCrashlytics();
+      if (message) {
+        log(crashlyticsInstance, message);
+      }
+      recordError(crashlyticsInstance, error);
+    } catch (e) {
+      console.error('Crashlytics recordError failed:', e);
     }
-    crashlytics().recordError(error);
   }
 
   public async logScreenView(screenName: string, screenClass?: string) {
     try {
-      await analytics().logScreenView({
+      const analytics = getAnalytics();
+      await logScreenView(analytics, {
         screen_name: screenName,
         screen_class: screenClass || screenName,
       });

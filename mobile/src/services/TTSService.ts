@@ -2,6 +2,7 @@ import Tts from 'react-native-tts';
 import auth from '@react-native-firebase/auth';
 import RNFS from 'react-native-fs';
 import ReactNativeBlobUtil from 'react-native-blob-util';
+import { Platform } from 'react-native';
 
 const API_BASE_URL = 'http://localhost:8080/api'; // Adjust for your environment
 
@@ -23,8 +24,21 @@ class TTSService {
     Tts.getInitStatus().then(
       () => {
         console.log('TTS Initialized');
-        Tts.setDefaultLanguage('en-US');
-        Tts.setDefaultRate(0.5);
+        try {
+          Tts.setDefaultLanguage('en-US');
+        } catch (error) {
+          console.warn('TTS setDefaultLanguage error during init:', error);
+        }
+        // On iOS, setDefaultRate may cause issues - wrap in try-catch
+        try {
+          if (Platform.OS === 'ios') {
+            Tts.setDefaultRate(0.5);
+          } else {
+            Tts.setDefaultRate(0.5, false);
+          }
+        } catch (error) {
+          console.warn('TTS setDefaultRate error during init:', error);
+        }
       },
       (err) => {
         if (err.code === 'no_engine') {
@@ -40,12 +54,26 @@ class TTSService {
   }
 
   public speak(text: string) {
-    Tts.stop();
-    Tts.speak(text);
+    try {
+      // Stop any ongoing speech before starting new one
+      // Wrap in separate try-catch as iOS may throw errors
+      try {
+        Tts.stop();
+      } catch (stopError) {
+        console.warn('TTS stop error (continuing):', stopError);
+      }
+      Tts.speak(text);
+    } catch (error) {
+      console.error('TTS speak error:', error);
+    }
   }
 
   public stop() {
-    Tts.stop();
+    try {
+      Tts.stop();
+    } catch (error) {
+      console.warn('TTS stop error:', error);
+    }
   }
 
   public async getVoices() {
@@ -72,19 +100,43 @@ class TTSService {
   }
 
   public setLanguage(language: string) {
-    Tts.setDefaultLanguage(language);
+    try {
+      Tts.setDefaultLanguage(language);
+    } catch (error) {
+      console.warn('TTS setLanguage error:', error);
+    }
   }
 
   public setVoice(voiceId: string) {
-    (Tts as any).setDefaultVoice(voiceId);
+    try {
+      (Tts as any).setDefaultVoice(voiceId);
+    } catch (error) {
+      console.warn('TTS setVoice error:', error);
+    }
   }
 
   public setRate(rate: number) {
-    Tts.setDefaultRate(rate);
+    // On iOS, setDefaultRate may not work reliably in all versions
+    // Wrap in try-catch to prevent blocking TTS functionality
+    try {
+      if (Platform.OS === 'ios') {
+        // iOS: only pass the rate parameter
+        Tts.setDefaultRate(rate);
+      } else {
+        // Android: pass rate and skipTransform
+        Tts.setDefaultRate(rate, false);
+      }
+    } catch (error) {
+      console.warn('TTS setRate error:', error);
+    }
   }
 
   public setPitch(pitch: number) {
-    Tts.setDefaultPitch(pitch);
+    try {
+      Tts.setDefaultPitch(pitch);
+    } catch (error) {
+      console.warn('TTS setPitch error:', error);
+    }
   }
 
   public requestInstallEngine() {
