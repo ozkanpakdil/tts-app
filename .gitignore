@@ -10,3 +10,5 @@ backend/target/
 mobile/node_modules/
 mobile/.expo/
 mobile/.web/
+build/ios/
+.output.txt
