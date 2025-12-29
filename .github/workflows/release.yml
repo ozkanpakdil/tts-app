@@ -38,8 +38,8 @@ jobs:
       - name: Build Android Release
         run: |
           cd mobile/android
-          ./gradlew assembleRelease
-          ./gradlew bundleRelease
+          chmod +x gradlew
+          ./gradlew assembleRelease bundleRelease --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
@@ -81,8 +81,28 @@ jobs:
       - name: Build iOS
         run: |
           cd mobile/ios
-          xcodebuild -workspace mobile.xcworkspace -scheme mobile -configuration Release -sdk iphoneos -archivePath $PWD/build/mobile.xcarchive archive
-          xcodebuild -exportArchive -archivePath $PWD/build/mobile.xcarchive -exportOptionsPlist exportOptions.plist -exportPath $PWD/build -allowProvisioningUpdates
+          # List schemes to verify
+          xcodebuild -list -workspace mobile.xcworkspace
+          
+          # Create build directory
+          mkdir -p build
+          
+          # Archive the app
+          xcodebuild -workspace mobile.xcworkspace \
+            -scheme mobile \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath $PWD/build/mobile.xcarchive \
+            clean archive \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
+          
+          # Export the IPA (Note: This will likely still fail without valid certificates, 
+          # but we use development method to be more permissive)
+          xcodebuild -exportArchive \
+            -archivePath $PWD/build/mobile.xcarchive \
+            -exportOptionsPlist exportOptions.plist \
+            -exportPath $PWD/build \
+            -allowProvisioningUpdates
 
       - name: Upload IPA
         uses: actions/upload-artifact@v4
