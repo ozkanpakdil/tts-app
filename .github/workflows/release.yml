@@ -2,6 +2,9 @@ name: Release Build
 
 on:
   push:
+    branches:
+      - main
+      - master
     tags:
       - 'v*'
 
@@ -9,6 +12,7 @@ jobs:
   build-android:
     name: Build Android
     runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref_type == 'tag' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -52,6 +56,7 @@ jobs:
   build-ios:
     name: Build iOS
     runs-on: macos-latest
+    if: github.event_name == 'push' && (github.ref_type == 'tag' || github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -94,20 +99,27 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: app-release-apk
+          path: .
 
       - name: Download Android AAB
         uses: actions/download-artifact@v4
         with:
           name: app-release-aab
+          path: .
 
       - name: Download iOS IPA
         uses: actions/download-artifact@v4
         with:
           name: app-release-ipa
+          path: .
 
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.ref_type == 'tag' && github.ref_name || 'dev' }}
+          name: ${{ github.ref_type == 'tag' && github.ref_name || 'Development Build' }}
+          prerelease: ${{ github.ref_type != 'tag' }}
+          make_latest: ${{ github.ref_type == 'tag' }}
           files: |
             *.apk
             *.aab
