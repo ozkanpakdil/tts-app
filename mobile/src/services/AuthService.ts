@@ -1,11 +1,5 @@
 import auth from '@react-native-firebase/auth';
-// import { GoogleSignin } from '@react-native-google-signin/google-signin';
-const GoogleSignin: any = {
-  configure: () => {},
-  hasPlayServices: () => Promise.resolve(true),
-  signIn: () => Promise.reject(new Error('Google Sign-In disabled in demo')),
-  signOut: () => Promise.resolve(),
-};
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
 import { appleAuth } from '@invertase/react-native-apple-authentication';
 import { useUserStore } from '../store/useStore';
 import { Platform } from 'react-native';
